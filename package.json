@@ -1,0 +1,26 @@
+{
+  "name": "email-scheduling",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "worker": "node src/worker.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bullmq": "^5.58.1",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "handlebars": "^4.7.8",
+    "ioredis": "^5.7.0",
+    "mysql2": "^3.14.3",
+    "postmark": "^4.0.5",
+    "qrcode-terminal": "^0.12.0",
+    "sequelize": "^6.37.7",
+    "whatsapp-web.js": "^1.32.0"
+  }
+}
