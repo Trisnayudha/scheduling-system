@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; color:#222; line-height:1.6;">
+    <p>Subject preview: <em>Payment Link Expired – Indonesia Miner 2026</em></p>
+    <p>Dear {{name}},</p>
+
+    <p>
+      Your payment link for
+      <b>{{#if event_name}}{{event_name}}{{else}}Indonesia Miner Conference and Exhibition 2026{{/if}}</b>
+      has expired.
+    </p>
+
+    <p>
+      If you still wish to attend, please request a new payment link by contacting our team at
+      <a href="mailto:{{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}">
+        {{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}
+      </a>
+      or WhatsApp us at
+      {{#if support_wa}}{{support_wa}}{{else}}+62 811 1798 599{{/if}}.
+    </p>
+
+    <p>We look forward to welcoming you to the event!</p>
+    <p>Warm regards,<br>Indonesia Miner Team</p>
+  </body>
+</html>

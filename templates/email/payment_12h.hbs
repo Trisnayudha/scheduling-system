@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; color:#222; line-height:1.6;">
+    <p>Subject preview: <em>12 Hours Left – Complete Your Payment for Indonesia Miner 2026</em></p>
+    <p>Dear {{name}},</p>
+
+    <p>
+      This is a friendly reminder that your registration for
+      <b>{{#if event_name}}{{event_name}}{{else}}Indonesia Miner Conference and Exhibition 2026{{/if}}</b>
+      is pending payment and your payment link will expire in <b>12 hours</b>.
+    </p>
+
+    <p>To secure your spot at the event, please complete your payment before the link expires.</p>
+
+    {{#if pay_link}}
+    <p style="margin:24px 0;">
+      <a href="{{pay_link}}" style="background:#0d6efd;padding:12px 18px;border-radius:6px;color:#fff;text-decoration:none;display:inline-block">
+        Click here to complete your payment
+      </a>
+    </p>
+    {{/if}}
+
+    <p><b>Event Details:</b><br>
+      Date: {{#if event_dates}}{{event_dates}}{{else}}May 5–7, 2026{{/if}}<br>
+      Venue: {{#if venue}}{{venue}}{{else}}The Westin Hotel Jakarta{{/if}}
+    </p>
+
+    <p>
+      For assistance, contact us at
+      <a href="mailto:{{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}">
+        {{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}
+      </a>
+      or WhatsApp us at
+      {{#if support_wa}}{{support_wa}}{{else}}+62 811 1798 599{{/if}}.
+    </p>
+
+    <p>Warm regards,<br>Indonesia Miner Team</p>
+
+    {{#if expired_at}}
+    <hr style="border:none;border-top:1px solid #eee;margin-top:24px">
+    <small>Payment link expires at (UTC): {{expired_at}}</small>
+    {{/if}}
+  </body>
+</html>
