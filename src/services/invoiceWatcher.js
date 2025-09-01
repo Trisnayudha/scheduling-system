@@ -27,16 +27,22 @@ export async function invoiceTick(limit = 200) {
     try {
         await conn.beginTransaction();
 
-        // 1) lock & baca cursor
+        // Pastikan sesi MySQL di UTC agar fungsi waktu konsisten
+        await conn.query("SET time_zone = '+00:00'");
+
+        // 1) Lock & baca cursor
         const lastId = await getOffset(conn);
 
-        // 2) ambil invoice BARU saja
+        // 2) Ambil invoice BARU, dan konversi expiry_date (WIB) → UTC di SQL
         const [rows] = await conn.query(
-            `SELECT id, payment_code, payer_email, description, expiry_date, invoice_url, status
-         FROM payment_invoice
-        WHERE id > ?
-        ORDER BY id ASC
-        LIMIT ?`,
+            `SELECT 
+          id, payment_code, payer_email, description, invoice_url, status,
+          -- Anggap expiry_date disimpan sebagai waktu WIB tanpa TZ
+          CONVERT_TZ(expiry_date, '+07:00', '+00:00') AS expiry_utc
+       FROM payment_invoice
+       WHERE id > ?
+       ORDER BY id ASC
+       LIMIT ?`,
             [lastId, limit]
         );
 
@@ -45,25 +51,32 @@ export async function invoiceTick(limit = 200) {
         let maxId = lastId;
         let inserted = 0;
 
+        const nowUtcMs = Date.now();
+
         for (const r of rows) {
             if (r.id > maxId) maxId = r.id;
 
             const stat = String(r.status || '').toUpperCase();
             if (!['PENDING', 'UNPAID', 'WAITING_PAYMENT'].includes(stat)) continue;
             if (!r.payer_email) continue;
-            if (!r.expiry_date) continue;
+            if (!r.expiry_utc) continue;
 
-            // expiry_date kamu ISO (…Z) → parse ke Date
-            const expUtc = new Date(String(r.expiry_date));
+            const expUtc = new Date(String(r.expiry_utc).replace(' ', 'T') + 'Z');
             if (isNaN(expUtc)) continue;
 
+            // Jadwalkan 12 jam sebelum expired (UTC)
             const sched12h = new Date(expUtc.getTime() - 12 * 3600 * 1000);
+
+            // Optional: skip kalau jadwal sudah lewat (misal backfill lama)
+            if (sched12h.getTime() < nowUtcMs) {
+                continue;
+            }
 
             const payload = {
                 name: r.description?.trim() || (r.payer_email?.split('@')[0] || 'Guest'),
                 invoice: r.payment_code,
                 pay_link: r.invoice_url,
-                expired_at: isoZ(expUtc)
+                expired_at: isoZ(expUtc) // kirim sebagai ISO UTC
             };
 
             try {
@@ -74,15 +87,15 @@ export async function invoiceTick(limit = 200) {
                     topic: 'payment',
                     payload,
                     job_key: `pay:${r.payment_code}`,
-                    scheduled_at: sched12h
+                    scheduled_at: sched12h // Date(UTC) yang sudah benar
                 });
                 inserted++;
-            } catch (_) {
-                // kalau kebetulan udah ada (misal restart di tengah), lewati saja
+            } catch {
+                // jika duplikat (idempotent di enqueueTask), lewati
             }
         }
 
-        // 3) majukan cursor ke batch yang sudah discan
+        // 3) Majukan cursor
         await setOffset(conn, maxId);
         await conn.commit();
 
