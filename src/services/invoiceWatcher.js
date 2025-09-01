@@ -36,15 +36,23 @@ export async function invoiceTick(limit = 200) {
         // 2) Ambil invoice BARU, dan konversi expiry_date (WIB) → UTC di SQL
         const [rows] = await conn.query(
             `SELECT 
-          id, payment_code, payer_email, description, invoice_url, status,
-          -- Anggap expiry_date disimpan sebagai waktu WIB tanpa TZ
-          CONVERT_TZ(expiry_date, '+07:00', '+00:00') AS expiry_utc
-       FROM payment_invoice
-       WHERE id > ?
-       ORDER BY id ASC
-       LIMIT ?`,
+      pi.id,
+      pi.payment_code,
+      pi.payer_email,
+      pi.description,
+      pi.invoice_url,
+      pi.status,
+      u.name AS user_name,
+      -- anggap expiry_date disimpan sebagai WIB tanpa TZ
+      CONVERT_TZ(pi.expiry_date, '+07:00', '+00:00') AS expiry_utc
+   FROM payment_invoice pi
+   LEFT JOIN users u ON pi.users_id = u.id
+   WHERE pi.id > ?
+   ORDER BY pi.id ASC
+   LIMIT ?`,
             [lastId, limit]
         );
+
 
         if (!rows.length) { await conn.commit(); return 0; }
 
