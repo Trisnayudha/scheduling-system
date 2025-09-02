@@ -1,37 +1,48 @@
+// src/services/taskService.js
 import { tx, pool } from '../db.js';
 import { renderEmail, renderWaText } from '../renderer.js';
 import { sendEmail } from '../providers/postmarkClient.js';
 import { sendWaWebJs } from '../providers/waWebJsClient.js';
 import { isPaidByJobKey, isCheckedInByJobKey } from './guards.js';
+import { toUtcDatetimeString, parseMaybeWibToUtc } from '../utils/datetime.js';
 
-const PAYMENT_FLOW = ['pay_12h', 'pay_3h', 'pay_expired'];
+const PAYMENT_FLOW = ['pay_12h', 'pay_3h', 'pay_60mins', 'pay_expired'];
 
-export async function enqueueTask(task) {
+function safeJson(j) { try { return j ? JSON.parse(j) : null; } catch { return null; } }
+
+/**
+ * Idempotent via UNIQUE (job_key, template_code, channel)
+ * - connOpt: optional connection/transaction (dipakai watcher untuk kurangi lock)
+ * - return true jika INSERT baru, false jika duplicate (sudah ada)
+ */
+export async function enqueueTask(task, connOpt = null) {
     const {
         channel, to_email = null, to_phone = null,
         template_code, topic = 'general', payload = null,
         job_key, scheduled_at
     } = task;
 
-    await pool.execute(
-        `INSERT INTO comm_tasks
-     (channel, to_email, to_phone, template_code, topic, payload, job_key, scheduled_at)
-     VALUES (?,?,?,?,?,?,?,?)`,
-        [channel, to_email, to_phone, template_code, topic, payload ? JSON.stringify(payload) : null, job_key, toDate(scheduled_at)]
-    );
-}
+    const db = connOpt || pool;
+    const dtUtc = toUtcDatetimeString(parseMaybeWibToUtc(scheduled_at));
+    const payloadStr = payload ? JSON.stringify(payload) : null;
 
-function toDate(d) {
-    // Terima string/Date → simpan sebagai UTC
-    const dt = (d instanceof Date) ? d : new Date(d);
-    return new Date(dt.toISOString().replace('Z', '')); // mysql DATETIME (tanpa zona) assumed UTC
+    const [res] = await db.execute(
+        `INSERT INTO comm_tasks
+       (channel, to_email, to_phone, template_code, topic, payload, job_key, scheduled_at, status)
+     VALUES (?,?,?,?,?,?,?,?, 'pending')
+     ON DUPLICATE KEY UPDATE job_key=VALUES(job_key)`,
+        [channel, to_email, to_phone, template_code, topic, payloadStr, job_key, dtUtc]
+    );
+
+    // INSERT baru → 1; duplicate → 2 (MySQL behavior)
+    return res.affectedRows === 1;
 }
 
 export async function cancelByJobKey(jobKey) {
     const [res] = await pool.execute(
         `UPDATE comm_tasks
-     SET status='canceled'
-     WHERE job_key=? AND status IN ('pending','queued')`,
+        SET status='canceled'
+      WHERE job_key=? AND status IN ('pending','queued')`,
         [jobKey]
     );
     return res.affectedRows;
@@ -39,30 +50,36 @@ export async function cancelByJobKey(jobKey) {
 
 export async function pickPendingBatch(limit = 100) {
     return tx(async (conn) => {
+        await conn.query("SET time_zone = '+00:00'");
+
         const [rows] = await conn.execute(
             `SELECT id, channel, to_email, to_phone, template_code, topic, payload, job_key
-       FROM comm_tasks
-       WHERE status='pending' AND scheduled_at <= UTC_TIMESTAMP()
-       ORDER BY scheduled_at ASC
-       LIMIT ? FOR UPDATE SKIP LOCKED`,
+         FROM comm_tasks
+        WHERE status='pending'
+          AND scheduled_at <= UTC_TIMESTAMP()
+        ORDER BY scheduled_at ASC, id ASC
+        LIMIT ? FOR UPDATE SKIP LOCKED`,
             [limit]
         );
+
         if (!rows.length) return [];
+
         const ids = rows.map(r => r.id);
         await conn.query(
-            `UPDATE comm_tasks SET status='queued' WHERE id IN (${ids.map(() => '?').join(',')})`,
+            `UPDATE comm_tasks
+          SET status='queued', queued_at=UTC_TIMESTAMP()
+        WHERE status='pending' AND id IN (${ids.map(() => '?').join(',')})`,
             ids
         );
+
         return rows.map(r => ({ ...r, payload: safeJson(r.payload) }));
     });
 }
 
-function safeJson(j) { try { return j ? JSON.parse(j) : null; } catch { return null; } }
-
 async function resolveTemplate(code, channel) {
     const [rows] = await pool.execute(
         `SELECT template_ref, subject FROM comm_templates
-     WHERE code=? AND channel=? AND active=1 LIMIT 1`,
+      WHERE code=? AND channel=? AND active=1 LIMIT 1`,
         [code, channel]
     );
     if (!rows.length) throw new Error(`Template not found: ${code}/${channel}`);
@@ -85,14 +102,8 @@ async function sendTask(task) {
     }
 
     if (channel === 'whatsapp') {
-        // Pilihan 1: WA Cloud (butuh WA_CLOUD_TOKEN & WA_CLOUD_PHONE_ID)
-        try {
-            return await sendWaCloudTemplate({ toPhoneE164: to_phone, templateRef: template_ref, language: 'id', payload });
-        } catch {
-            // Pilihan 2: fallback ke wa-webjs (text file)
-            const text = await renderWaText(template_ref + '.txt', payload);
-            return await sendWaWebJs({ toPhoneE164: to_phone, text });
-        }
+        const text = await renderWaText(template_ref + '.txt', payload);
+        return await sendWaWebJs({ toPhoneE164: to_phone, text });
     }
 
     throw new Error('Unsupported channel: ' + channel);
@@ -100,14 +111,18 @@ async function sendTask(task) {
 
 export async function markSent(id, providerMessageId) {
     await pool.execute(
-        `UPDATE comm_tasks SET status='sent', sent_at=UTC_TIMESTAMP(), provider_message_id=? WHERE id=?`,
+        `UPDATE comm_tasks
+        SET status='sent', sent_at=UTC_TIMESTAMP(), provider_message_id=?
+      WHERE id=?`,
         [providerMessageId || null, id]
     );
 }
 
 export async function markFailed(id, err) {
     await pool.execute(
-        `UPDATE comm_tasks SET status='failed', last_error=? WHERE id=?`,
+        `UPDATE comm_tasks
+        SET status='failed', last_error=?
+      WHERE id=?`,
         [String(err?.message || err), id]
     );
 }
@@ -121,14 +136,22 @@ export async function chainPaymentIfNeeded(task) {
     const nextCode = PAYMENT_FLOW[idx + 1];
     const expAtStr = task.payload?.expired_at;
     if (!expAtStr) return;
-    const expAt = new Date(expAtStr);
-    const nextAt =
-        nextCode === 'pay_3h' ? new Date(expAt.getTime() - 3 * 3600 * 1000) :
-            nextCode === 'pay_expired' ? expAt : expAt;
+
+    const expAt = parseMaybeWibToUtc(expAtStr);
+    let nextAt = expAt;
+    if (nextCode === 'pay_3h') nextAt = new Date(expAt.getTime() - 3 * 3600 * 1000);
+    else if (nextCode === 'pay_60mins') nextAt = new Date(expAt.getTime() - 60 * 60 * 1000);
+    else if (nextCode === 'pay_expired') nextAt = expAt;
 
     const ops = [];
-    if (task.to_email) ops.push(enqueueTask({ channel: 'email', to_email: task.to_email, template_code: nextCode, topic: 'payment', payload: task.payload, job_key: task.job_key, scheduled_at: nextAt }));
-    if (task.to_phone) ops.push(enqueueTask({ channel: 'whatsapp', to_phone: task.to_phone, template_code: nextCode, topic: 'payment', payload: task.payload, job_key: task.job_key, scheduled_at: nextAt }));
+    if (task.to_email) ops.push(enqueueTask({
+        channel: 'email', to_email: task.to_email, template_code: nextCode, topic: 'payment',
+        payload: task.payload, job_key: task.job_key, scheduled_at: nextAt
+    }));
+    if (task.to_phone) ops.push(enqueueTask({
+        channel: 'whatsapp', to_phone: task.to_phone, template_code: nextCode, topic: 'payment',
+        payload: task.payload, job_key: task.job_key, scheduled_at: nextAt
+    }));
     await Promise.all(ops);
 }
 
@@ -139,7 +162,7 @@ export async function processOne(task) {
             return;
         }
         const res = await sendTask(task);
-        await markSent(task.id, res.providerMessageId);
+        await markSent(task.id, res?.providerMessageId);
         if (task.template_code.startsWith('pay_')) await chainPaymentIfNeeded(task);
     } catch (err) {
         await markFailed(task.id, err);

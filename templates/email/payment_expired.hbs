@@ -1,24 +1,75 @@
 <!doctype html>
-<html>
-  <body style="font-family: Arial, sans-serif; color:#222; line-height:1.6;">
-    <p>Dear {{name}},</p>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Payment Expired</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; padding:0; background:#f6f7fb; font-family:Arial,Helvetica,sans-serif; color:#111827; }
+    .wrapper { width:100%; background:#f6f7fb; padding:24px 0; }
+    .container { max-width:640px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden; }
+    .header { padding:24px 28px; background:#111827; color:#ffffff; font-weight:bold; font-size:18px; }
+    .content { padding:28px; font-size:14px; line-height:1.6; }
+    .greet { font-size:16px; font-weight:bold; margin:0 0 12px; }
+    .highlight { font-weight:bold; }
+    .muted { color:#6b7280; font-size:12px; }
+    .footer { padding:20px 28px; background:#fafafa; color:#6b7280; font-size:12px; }
+    a { color:#2563eb; }
+    .cta-wrap { text-align:center; margin:20px 0 8px; }
+    .btn {
+      display:inline-block; padding:12px 20px; text-decoration:none;
+      background:#2563eb; color:#ffffff; border-radius:6px; font-weight:bold;
+    }
+    @media (max-width:480px) { .content, .header, .footer { padding-left:18px; padding-right:18px; } }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
 
-    <p>
-      Your payment link for
-      <b>{{#if event_name}}{{event_name}}{{else}}Indonesia Miner Conference and Exhibition 2026{{/if}}</b>
-      has expired.
-    </p>
+      <div class="header">
+        Indonesia Miner 2026
+      </div>
 
-    <p>
-      If you still wish to attend, please request a new payment link by contacting our team at
-      <a href="mailto:{{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}">
-        {{#if support_email}}{{support_email}}{{else}}info@indonesiaminer.com{{/if}}
-      </a>
-      or WhatsApp us at
-      {{#if support_wa}}{{support_wa}}{{else}}+62 811 1798 599{{/if}}.
-    </p>
+      <div class="content">
+        <p class="greet">Dear {{name}},</p>
 
-    <p>We look forward to welcoming you to the event!</p>
-    <p>Warm regards,<br>Indonesia Miner Team</p>
-  </body>
+        <p>
+          We regret to inform you that the payment period for your
+          <span class="highlight">{{ticket_promo_name}}</span> ticket to attend
+          <span class="highlight">Indonesia Miner Conference &amp; Exhibition 2026</span>
+          has expired, resulting in the release of your reservation.
+        </p>
+
+        <p>
+          If you remain interested in attending at this discounted rate, rebooking will be necessary and is subject to availability.
+          Please reach out to our support team at
+          <a href="mailto:info@indonesiaminer.com">info@indonesiaminer.com</a> or <a href="https://wa.me/628111798599" target="_blank" rel="noopener"></a>{{/if}}
+          for assistance or any inquiries.
+        </p>
+
+        {{#if rebook_link}}
+        <div class="cta-wrap">
+          <a class="btn" href="{{rebook_link}}" target="_blank" rel="noopener">Rebook Your Ticket</a>
+        </div>
+        {{/if}}
+
+        {{#if expired_at}}
+        <p class="muted">Note: Your invoice expired at <strong>{{expired_at}}</strong> (UTC).</p>
+        {{/if}}
+
+        <p style="margin-top:20px;">
+          Warm regards,<br>
+          <strong>Indonesia Miner Team</strong>
+        </p>
+      </div>
+
+      <div class="footer">
+        You received this email because you started a registration for Indonesia Miner 2026.
+        If you believe this is a mistake, please contact support.
+      </div>
+
+    </div>
+  </div>
+</body>
 </html>
