@@ -1,4 +1,5 @@
 // src/services/taskService.js
+import Handlebars from 'handlebars';
 import { tx, pool } from '../db.js';
 import { renderEmail, renderWaText } from '../renderer.js';
 import { sendEmail } from '../providers/postmarkClient.js';
@@ -10,10 +11,21 @@ const PAYMENT_FLOW = ['pay_12h', 'pay_3h', 'pay_60mins', 'pay_expired'];
 
 function safeJson(j) { try { return j ? JSON.parse(j) : null; } catch { return null; } }
 
+function renderSubjectTemplate(subject, payload) {
+    try {
+        if (!subject) return '(no subject)';
+        if (!subject.includes('{{')) return subject;
+        const tpl = Handlebars.compile(subject);
+        return tpl(payload || {});
+    } catch {
+        return subject || '(no subject)';
+    }
+}
+
 /**
- * Idempotent via UNIQUE (job_key, template_code, channel)
- * - connOpt: optional connection/transaction (dipakai watcher untuk kurangi lock)
- * - return true jika INSERT baru, false jika duplicate (sudah ada)
+ * Idempotent via UNIQUE (job_key, template_code, channel).
+ * - connOpt: optional connection/transaction (dipakai watcher untuk kurangi lock).
+ * - return true jika INSERT baru, false jika duplicate (sudah ada).
  */
 export async function enqueueTask(task, connOpt = null) {
     const {
@@ -34,7 +46,7 @@ export async function enqueueTask(task, connOpt = null) {
         [channel, to_email, to_phone, template_code, topic, payloadStr, job_key, dtUtc]
     );
 
-    // INSERT baru → 1; duplicate → 2 (MySQL behavior)
+    // INSERT baru → 1; duplicate → 2 (MySQL)
     return res.affectedRows === 1;
 }
 
@@ -65,9 +77,10 @@ export async function pickPendingBatch(limit = 100) {
         if (!rows.length) return [];
 
         const ids = rows.map(r => r.id);
+        // Jika kamu punya kolom queued_at, boleh tambahkan: , queued_at=UTC_TIMESTAMP()
         await conn.query(
             `UPDATE comm_tasks
-          SET status='queued', queued_at=UTC_TIMESTAMP()
+          SET status='queued'
         WHERE status='pending' AND id IN (${ids.map(() => '?').join(',')})`,
             ids
         );
@@ -98,7 +111,8 @@ async function sendTask(task) {
 
     if (channel === 'email') {
         const html = await renderEmail(template_ref, payload);
-        return await sendEmail({ to: to_email, subject: subject || '(no subject)', html });
+        const subj = renderSubjectTemplate(subject, payload);
+        return await sendEmail({ to: to_email, subject: subj, html });
     }
 
     if (channel === 'whatsapp') {
