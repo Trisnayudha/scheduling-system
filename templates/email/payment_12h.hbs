@@ -4,100 +4,83 @@
   <meta charset="utf-8">
   <title>Reminder: 12 Hours Left</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin:0; padding:0;
-      background:#f6f7fb;
-      font-family: Arial, Helvetica, sans-serif;
-      color:#111111;
-      -webkit-text-size-adjust:100%;
-      -ms-text-size-adjust:100%;
-    }
-    .wrapper { width:100%; padding:20px 0; }
-    .container {
-      max-width:600px; margin:0 auto;
-      background:#ffffff; border:1px solid #e5e7eb;
-    }
-    .header {
-      background:#111827; color:#ffffff;
-      padding:14px 18px; font-weight:bold; font-size:18px;
-    }
-    .content { padding:20px; font-size:14px; line-height:1.5; }
-    .greet { font-size:16px; font-weight:bold; margin:0 0 12px; }
-    .highlight { font-weight:bold; }
-    .cta-wrap { text-align:center; margin:20px 0; }
-    .btn {
-      display:inline-block; text-decoration:none;
-      background:#2563eb; color:#ffffff;
-      padding:12px 20px; border-radius:4px;
-      font-weight:bold;
-    }
-    .muted { color:#6b7280; font-size:12px; }
-    .footer {
-      background:#fafafa; color:#6b7280;
-      font-size:12px; padding:14px 18px;
-    }
-    a { color:#2563eb; }
-    @media only screen and (max-width:480px) {
-      .header, .content, .footer { padding-left:16px; padding-right:16px; }
-    }
-  </style>
 </head>
-<body>
-  <div class="wrapper">
-    <div class="container">
+<body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#111111;">
 
-      <div class="header">
-        Indonesia Miner Conference &amp; Exhibition 2026
-      </div>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#f6f7fb;padding:20px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;">
 
-      <div class="content">
-        <p class="greet">Dear {{name}},</p>
+          <!-- Header -->
+          <tr>
+            <td style="background:#00537a;color:#ffffff;padding:14px 18px;font-weight:bold;font-size:18px;">
+              Indonesia Miner Conference &amp; Exhibition 2026
+            </td>
+          </tr>
 
-        <p>
-          This is a friendly reminder that payment for your
-          <span class="highlight">{{ticket_promo_name}}</span> to the
-          <span class="highlight">Indonesia Miner Conference &amp; Exhibition 2026</span>
-          May 5 – 7, 2026 is due within the next
-          <span class="highlight">12 hours</span>.
-        </p>
+          <!-- Content -->
+          <tr>
+            <td style="padding:20px;font-size:14px;line-height:1.5;">
+              <p style="font-size:16px;font-weight:bold;margin:0 0 12px;">Dear {{name}},</p>
 
-        <p>
-          As this is a limited-time offer, payment must be completed within this timeframe
-          to confirm your registration and secure the discounted rate.
-        </p>
+              <p>
+                This is a friendly reminder that payment for your
+                <strong>{{ticket_promo_name}}</strong> to the
+                <strong>Indonesia Miner Conference &amp; Exhibition 2026</strong>
+                May 5 – 7, 2026 is due within the next <strong>12 hours</strong>.
+              </p>
 
-        <div class="cta-wrap">
-          <a href="{{pay_link}}" class="btn" target="_blank" rel="noopener">Complete Payment Here</a>
-        </div>
+              <p>
+                As this is a limited-time offer, payment must be completed within this timeframe
+                to confirm your registration and secure the discounted rate.
+              </p>
 
-        <p class="muted">
-          If the button doesn’t work, copy and paste this link into your browser:<br>
-          <a href="{{pay_link}}" target="_blank" rel="noopener">{{pay_link}}</a>
-        </p>
+              <!-- Button -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:20px 0;">
+                <tr>
+                  <td bgcolor="#2563eb" style="border-radius:4px;">
+                    <a href="{{pay_link}}" target="_blank" rel="noopener"
+                       style="display:inline-block;padding:12px 20px;font-size:14px;
+                              font-weight:bold;color:#ffffff;text-decoration:none;">
+                      Complete Payment Here
+                    </a>
+                  </td>
+                </tr>
+              </table>
 
-        {{#if expired_at}}
-        <p class="muted">
-          Note: Your invoice expires at <strong>{{expired_at}}</strong> (UTC).
-        </p>
-        {{/if}}
+              <p style="font-size:12px;color:#6b7280;margin:0 0 12px;">
+                If the button doesn’t work, copy and paste this link into your browser:<br>
+                <a href="{{pay_link}}" target="_blank" rel="noopener" style="color:#2563eb;">{{pay_link}}</a>
+              </p>
 
-        <p>
-          If you have any questions, feel free to reach out to us.
-        </p>
+              {{#if expired_at}}
+              <p style="font-size:12px;color:#6b7280;margin:0 0 12px;">
+                Note: Your invoice expires at <strong>{{expired_at}}</strong> (UTC).
+              </p>
+              {{/if}}
 
-        <p style="margin-top:20px;">
-          Warm regards,<br>
-          <strong>Indonesia Miner Team</strong>
-        </p>
-      </div>
+              <p>If you have any questions, feel free to reach out to us.</p>
 
-      <div class="footer">
-        You receive this email because you started a registration for Indonesia Miner 2026.
-        If you have completed payment recently, you can ignore this message.
-      </div>
+              <p style="margin-top:20px;">
+                Warm regards,<br>
+                <strong>Indonesia Miner Team</strong>
+              </p>
+            </td>
+          </tr>
 
-    </div>
-  </div>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#fafafa;color:#6b7280;font-size:12px;padding:14px 18px;">
+              You receive this email because you started a registration for Indonesia Miner 2026.
+              If you have completed payment recently, you can ignore this message.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>

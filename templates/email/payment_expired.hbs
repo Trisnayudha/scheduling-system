@@ -4,94 +4,81 @@
   <meta charset="utf-8">
   <title>Payment Expired</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin:0; padding:0;
-      background:#f6f7fb;
-      font-family: Arial, Helvetica, sans-serif;
-      color:#111827;
-      -webkit-text-size-adjust:100%;
-      -ms-text-size-adjust:100%;
-    }
-    .wrapper { width:100%; padding:20px 0; }
-    .container {
-      max-width:600px; margin:0 auto;
-      background:#ffffff; border:1px solid #e5e7eb;
-    }
-    .header {
-      background:#111827; color:#ffffff;
-      padding:14px 18px; font-size:18px; font-weight:bold;
-    }
-    .content { padding:20px; font-size:14px; line-height:1.6; }
-    .greet { font-size:16px; font-weight:bold; margin:0 0 12px; }
-    .highlight { font-weight:bold; }
-    .cta-wrap { text-align:center; margin:20px 0; }
-    .btn {
-      display:inline-block; text-decoration:none;
-      background:#2563eb; color:#ffffff;
-      padding:12px 20px; border-radius:4px; font-weight:bold;
-    }
-    .muted { color:#6b7280; font-size:12px; }
-    .footer {
-      background:#fafafa; color:#6b7280;
-      font-size:12px; padding:14px 18px;
-    }
-    a { color:#2563eb; }
-    @media only screen and (max-width:480px) {
-      .header, .content, .footer { padding-left:16px; padding-right:16px; }
-    }
-  </style>
 </head>
 
-<body>
-  <div class="wrapper">
-    <div class="container">
+<body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#f6f7fb;padding:20px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;">
 
-      <!-- Header -->
-      <div class="header">
-     Indonesia Miner Conference &amp; Exhibition 2026
-      </div>
+          <!-- Header -->
+          <tr>
+            <td style="background:#00537a;color:#ffffff;padding:14px 18px;font-size:18px;font-weight:bold;">
+              Indonesia Miner Conference &amp; Exhibition 2026
+            </td>
+          </tr>
 
-      <!-- Content -->
-      <div class="content">
-        <p class="greet">Dear {{name}},</p>
+          <!-- Content -->
+          <tr>
+            <td style="padding:20px;font-size:14px;line-height:1.6;">
+              <p style="font-size:16px;font-weight:bold;margin:0 0 12px;">Dear {{name}},</p>
 
-        <p>
-          We regret to inform you that the payment window for your
-          <span class="highlight">{{ticket_promo_name}}</span> to attend the
-          <span class="highlight">Indonesia Miner Conference &amp; Exhibition 2026</span>
-          has expired, and your reservation has been released.
-        </p>
+              <p style="margin:0 0 12px;">
+                We regret to inform you that the payment window for your
+                <strong>{{ticket_promo_name}}</strong> to attend the
+                <strong>Indonesia Miner Conference &amp; Exhibition 2026</strong>
+                has expired, and your reservation has been released.
+              </p>
 
-        <p>
-          If you are still interested in attending at the discounted rate, rebooking will be required and is subject to availability.  
-          Please contact our support team at <a href="mailto:info@indonesiaminer.com">info@indonesiaminer.com</a> 
-          or via WhatsApp at <a href="https://wa.me/628111798599" target="_blank" rel="noopener">+62 811 1798 599</a> for assistance.
-        </p>
+              <p style="margin:0 0 20px;">
+                If you are still interested in attending at the discounted rate, rebooking will be required and is subject to availability.  
+                Please contact our support team at 
+                <a href="mailto:info@indonesiaminer.com" style="color:#2563eb;">info@indonesiaminer.com</a> 
+                or via WhatsApp at 
+                <a href="https://wa.me/628111798599" target="_blank" rel="noopener" style="color:#2563eb;">+62 811 1798 599</a> 
+                for assistance.
+              </p>
 
-        {{#if rebook_link}}
-        <div class="cta-wrap">
-          <a class="btn" href="{{rebook_link}}" target="_blank" rel="noopener">Rebook Your Ticket</a>
-        </div>
-        {{/if}}
+              {{#if rebook_link}}
+              <!-- Button -->
+              <table role="presentation" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:20px 0;">
+                <tr>
+                  <td bgcolor="#2563eb" style="border-radius:4px;">
+                    <a href="{{rebook_link}}" target="_blank" rel="noopener"
+                       style="display:inline-block;padding:12px 20px;font-size:14px;font-weight:bold;
+                              color:#ffffff;text-decoration:none;background:#2563eb;border-radius:4px;">
+                      Rebook Your Ticket
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              {{/if}}
 
-        {{#if expired_at}}
-        <p class="muted">Note: Your invoice expired at <strong>{{expired_at}}</strong> (UTC).</p>
-        {{/if}}
+              {{#if expired_at}}
+              <p style="font-size:12px;color:#6b7280;margin:0 0 12px;">
+                Note: Your invoice expired at <strong>{{expired_at}}</strong> (UTC).
+              </p>
+              {{/if}}
 
-        <p style="margin-top:20px;">
-          Warm regards,<br>
-          <strong>Indonesia Miner Team</strong>
-        </p>
-      </div>
+              <p style="margin-top:20px;">
+                Warm regards,<br>
+                <strong>Indonesia Miner Team</strong>
+              </p>
+            </td>
+          </tr>
 
-      <!-- Footer -->
-      <div class="footer">
-        You received this email because you started a registration for Indonesia Miner 2026.  
-        If you believe this is a mistake, please contact support.
-      </div>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#fafafa;color:#6b7280;font-size:12px;padding:14px 18px;">
+              You received this email because you started a registration for Indonesia Miner 2026.  
+              If you believe this is a mistake, please contact support.
+            </td>
+          </tr>
 
-    </div>
-  </div>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
