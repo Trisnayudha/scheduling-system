@@ -7,7 +7,7 @@ import { sendWaWebJs } from '../providers/waWebJsClient.js';
 import { isPaidByJobKey, isCheckedInByJobKey } from './guards.js';
 import { toUtcDatetimeString, parseMaybeWibToUtc } from '../utils/datetime.js';
 
-const PAYMENT_FLOW = ['pay_12h', 'pay_3h', 'pay_60mins', 'pay_expired'];
+const PAYMENT_FLOW = ['pay_12h', 'pay_60mins', 'pay_expired'];
 
 function safeJson(j) { try { return j ? JSON.parse(j) : null; } catch { return null; } }
 
