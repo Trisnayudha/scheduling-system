@@ -1,96 +1,44 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>Payment Expired</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: #f6f7fb;
+      margin:0; padding:0;
+      background:#f6f7fb;
       font-family: Arial, Helvetica, sans-serif;
-      color: #111827;
+      color:#111827;
+      -webkit-text-size-adjust:100%;
+      -ms-text-size-adjust:100%;
     }
-
-    .wrapper {
-      width: 100%;
-      background: #f6f7fb;
-      padding: 24px 0;
-    }
-
+    .wrapper { width:100%; padding:20px 0; }
     .container {
-      max-width: 640px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
+      max-width:600px; margin:0 auto;
+      background:#ffffff; border:1px solid #e5e7eb;
     }
-
     .header {
-      padding: 24px 28px;
-      background: #111827;
-      color: #ffffff;
-      font-weight: bold;
-      font-size: 18px;
+      background:#111827; color:#ffffff;
+      padding:14px 18px; font-size:18px; font-weight:bold;
     }
-
-    .content {
-      padding: 28px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .greet {
-      font-size: 16px;
-      font-weight: bold;
-      margin: 0 0 12px;
-    }
-
-    .highlight {
-      font-weight: bold;
-    }
-
-    .muted {
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    .footer {
-      padding: 20px 28px;
-      background: #fafafa;
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    a {
-      color: #2563eb;
-    }
-
-    .cta-wrap {
-      text-align: center;
-      margin: 20px 0 8px;
-    }
-
+    .content { padding:20px; font-size:14px; line-height:1.6; }
+    .greet { font-size:16px; font-weight:bold; margin:0 0 12px; }
+    .highlight { font-weight:bold; }
+    .cta-wrap { text-align:center; margin:20px 0; }
     .btn {
-      display: inline-block;
-      padding: 12px 20px;
-      text-decoration: none;
-      background: #2563eb;
-      color: #ffffff;
-      border-radius: 6px;
-      font-weight: bold;
+      display:inline-block; text-decoration:none;
+      background:#2563eb; color:#ffffff;
+      padding:12px 20px; border-radius:4px; font-weight:bold;
     }
-
-    @media (max-width:480px) {
-
-      .content,
-      .header,
-      .footer {
-        padding-left: 18px;
-        padding-right: 18px;
-      }
+    .muted { color:#6b7280; font-size:12px; }
+    .footer {
+      background:#fafafa; color:#6b7280;
+      font-size:12px; padding:14px 18px;
+    }
+    a { color:#2563eb; }
+    @media only screen and (max-width:480px) {
+      .header, .content, .footer { padding-left:16px; padding-right:16px; }
     }
   </style>
 </head>
@@ -99,10 +47,12 @@
   <div class="wrapper">
     <div class="container">
 
+      <!-- Header -->
       <div class="header">
-        Indonesia Miner 2026
+     Indonesia Miner Conference &amp; Exhibition 2026
       </div>
 
+      <!-- Content -->
       <div class="content">
         <p class="greet">Dear {{name}},</p>
 
@@ -114,11 +64,9 @@
         </p>
 
         <p>
-          If you are still interested in attending at the discounted rate, rebooking will be required and is subject to
-          availability. Please contact our support team a
-          <a href="mailto:info@indonesiaminer.com">info@indonesiaminer.com</a> or <a href="https://wa.me/628111798599"
-            target="_blank" rel="noopener"></a>{{/if}}
-          for assistance or further inquiries.
+          If you are still interested in attending at the discounted rate, rebooking will be required and is subject to availability.  
+          Please contact our support team at <a href="mailto:info@indonesiaminer.com">info@indonesiaminer.com</a> 
+          or via WhatsApp at <a href="https://wa.me/628111798599" target="_blank" rel="noopener">+62 811 1798 599</a> for assistance.
         </p>
 
         {{#if rebook_link}}
@@ -137,13 +85,13 @@
         </p>
       </div>
 
+      <!-- Footer -->
       <div class="footer">
-        You received this email because you started a registration for Indonesia Miner 2026.
+        You received this email because you started a registration for Indonesia Miner 2026.  
         If you believe this is a mistake, please contact support.
       </div>
 
     </div>
   </div>
 </body>
-
 </html>

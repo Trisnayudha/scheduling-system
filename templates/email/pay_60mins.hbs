@@ -1,33 +1,58 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>60 Minutes Left</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+<body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
-      <td align="center" style="padding:24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="max-width:640px;">
+      <td align="center" style="padding:20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;">
+          
+          <!-- Header -->
           <tr>
-            <td style="font-size:14px;line-height:1.6;">
+            <td style="background:#111827;color:#ffffff;padding:14px 18px;font-size:18px;font-weight:bold;">
+             Indonesia Miner Conference &amp; Exhibition 2026
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding:20px;font-size:14px;line-height:1.6;">
               <p>Dear {{name}},</p>
 
               <p>
-                This is your final reminder that payment for your <strong>{{ticket_promo_name}}</strong> to the
-                Indonesia Miner Conference &amp; Exhibition 2026 is due within the next <strong>60 minutes</strong>.
+                This is your final reminder that payment for your 
+                <strong>{{ticket_promo_name}}</strong> to the 
+                <strong>Indonesia Miner Conference &amp; Exhibition 2026</strong> 
+                is due within the next <strong>60 minutes</strong>.
               </p>
 
               <p>Please complete your payment promptly to secure your ticket at the special discounted rate.</p>
-              <p>
-                <strong>Proceed to Payment:</strong>
-                <a href="{{pay_link}}" target="_blank" rel="noopener">{{pay_link}}</a>
+
+              <!-- CTA Button -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:20px 0;">
+                <tr>
+                  <td bgcolor="#2563eb" style="border-radius:4px;">
+                    <a href="{{pay_link}}" target="_blank" rel="noopener"
+                       style="display:inline-block;padding:12px 20px;font-size:14px;font-weight:bold;
+                              color:#ffffff;text-decoration:none;">
+                      Complete Payment Here
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#6b7280;">
+                If the button doesn’t work, copy and paste this link into your browser:<br>
+                <a href="{{pay_link}}" target="_blank" rel="noopener" style="color:#2563eb;">{{pay_link}}</a>
               </p>
 
-              <p>If you have any questions or need assistance, please don't hesitate to contact us.
+              <p>
+                If you have any questions or need assistance, please don't hesitate to contact us.
               </p>
 
               <p style="margin-top:20px;">
@@ -36,10 +61,18 @@
               </p>
             </td>
           </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#fafafa;color:#6b7280;font-size:12px;padding:14px 18px;">
+              You receive this email because you started a registration for Indonesia Miner 2026. 
+              If you have completed payment recently, you can ignore this message.
+            </td>
+          </tr>
+
         </table>
       </td>
     </tr>
   </table>
 </body>
-
 </html>
