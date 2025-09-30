@@ -5,23 +5,41 @@
   <title>Reminder: 12 Hours Left</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { margin:0; padding:0; background:#f6f7fb; font-family:Arial,Helvetica,sans-serif; color:#111827; }
-    .wrapper { width:100%; background:#f6f7fb; padding:24px 0; }
-    .container { max-width:640px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden; }
-    .header { padding:24px 28px; background:#111827; color:#ffffff; font-weight:bold; font-size:18px; }
-    .content { padding:28px; font-size:14px; line-height:1.6; }
+    body {
+      margin:0; padding:0;
+      background:#f6f7fb;
+      font-family: Arial, Helvetica, sans-serif;
+      color:#111111;
+      -webkit-text-size-adjust:100%;
+      -ms-text-size-adjust:100%;
+    }
+    .wrapper { width:100%; padding:20px 0; }
+    .container {
+      max-width:600px; margin:0 auto;
+      background:#ffffff; border:1px solid #e5e7eb;
+    }
+    .header {
+      background:#111827; color:#ffffff;
+      padding:14px 18px; font-weight:bold; font-size:18px;
+    }
+    .content { padding:20px; font-size:14px; line-height:1.5; }
     .greet { font-size:16px; font-weight:bold; margin:0 0 12px; }
     .highlight { font-weight:bold; }
-    .cta-wrap { text-align:center; margin:24px 0 8px; }
+    .cta-wrap { text-align:center; margin:20px 0; }
     .btn {
-      display:inline-block; padding:12px 20px; text-decoration:none;
-      background:#2563eb; color:#ffffff; border-radius:6px; font-weight:bold;
+      display:inline-block; text-decoration:none;
+      background:#2563eb; color:#ffffff;
+      padding:12px 20px; border-radius:4px;
+      font-weight:bold;
     }
     .muted { color:#6b7280; font-size:12px; }
-    .footer { padding:20px 28px; background:#fafafa; color:#6b7280; font-size:12px; }
+    .footer {
+      background:#fafafa; color:#6b7280;
+      font-size:12px; padding:14px 18px;
+    }
     a { color:#2563eb; }
-    @media (max-width:480px) {
-      .content, .header, .footer { padding-left:18px; padding-right:18px; }
+    @media only screen and (max-width:480px) {
+      .header, .content, .footer { padding-left:16px; padding-right:16px; }
     }
   </style>
 </head>
@@ -37,17 +55,20 @@
         <p class="greet">Dear {{name}},</p>
 
         <p>
-        This is a friendly reminder that payment for your
+          This is a friendly reminder that payment for your
           <span class="highlight">{{ticket_promo_name}}</span> to the
-          <span class="highlight">Indonesia Miner Conference &amp; Exhibition 2026</span> May 5 – 7, 2026 is due within the next <span class="highlight">12 hours</span>.
+          <span class="highlight">Indonesia Miner Conference &amp; Exhibition 2026</span>
+          May 5 – 7, 2026 is due within the next
+          <span class="highlight">12 hours</span>.
         </p>
 
         <p>
-        As this is a limited-time offer, payment must be completed within this timeframe to confirm your registration and secure the discounted rate.
+          As this is a limited-time offer, payment must be completed within this timeframe
+          to confirm your registration and secure the discounted rate.
         </p>
 
         <div class="cta-wrap">
-          <a class="btn" href="{{pay_link}}" target="_blank" rel="noopener">Complete Payment Here</a>
+          <a href="{{pay_link}}" class="btn" target="_blank" rel="noopener">Complete Payment Here</a>
         </div>
 
         <p class="muted">
@@ -62,7 +83,7 @@
         {{/if}}
 
         <p>
-         If you have any questions, feel free to reach out to us.
+          If you have any questions, feel free to reach out to us.
         </p>
 
         <p style="margin-top:20px;">
