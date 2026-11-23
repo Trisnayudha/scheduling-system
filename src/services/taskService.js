@@ -5,6 +5,7 @@ import { renderEmail, renderWaText } from '../renderer.js';
 import { sendEmail } from '../providers/postmarkClient.js';
 import { sendWaWebJs } from '../providers/waWebJsClient.js';
 import { isPaidByJobKey, isCheckedInByJobKey } from './guards.js';
+import { EXHIBITION_REMINDERS, shouldSendExhibitionReminder } from './exhibitionReminder.js';
 import { toUtcDatetimeString, parseMaybeWibToUtc } from '../utils/datetime.js';
 
 const PAYMENT_FLOW = ['pay_12h', 'pay_60mins', 'pay_expired'];
@@ -90,6 +91,8 @@ export async function pickPendingBatch(limit = 100) {
 }
 
 async function resolveTemplate(code, channel) {
+    const exhibition = EXHIBITION_REMINDERS.find(reminder => reminder.code === code && channel === 'email');
+    if (exhibition) return { template_ref: `${exhibition.code}.hbs`, subject: exhibition.subject };
     const [rows] = await pool.execute(
         `SELECT template_ref, subject FROM comm_templates
       WHERE code=? AND channel=? AND active=1 LIMIT 1`,
@@ -100,6 +103,7 @@ async function resolveTemplate(code, channel) {
 }
 
 async function shouldSend(task) {
+    if (task.topic === 'exhibition_payment') return shouldSendExhibitionReminder(task);
     if (task.topic === 'payment' && await isPaidByJobKey(task.job_key)) return false;
     if (task.topic === 'event' && await isCheckedInByJobKey(task.job_key)) return false;
     return true;

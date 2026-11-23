@@ -2,6 +2,7 @@ import 'dotenv/config';
 import pLimit from 'p-limit';
 import { pickPendingBatch, processOne } from './services/taskService.js';
 import { invoiceTick } from './services/invoiceWatcher.js';
+import { exhibitionInvoiceTick } from './services/exhibitionReminder.js';
 import { initWaWebJs } from './providers/waWebJsClient.js'; // kalau pakai WA device
 
 const SEND_INTERVAL = Number(process.env.POLL_INTERVAL_MS || 15000);
@@ -28,6 +29,7 @@ async function sendTick() {
 async function watchTick() {
     try {
         await invoiceTick(Number(process.env.INVOICE_SCAN_LIMIT || 200));
+        await exhibitionInvoiceTick();
     } catch (e) { console.error('[watchTick]', e?.message || e); }
 }
 
