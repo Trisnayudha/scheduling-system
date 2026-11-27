@@ -20,7 +20,8 @@ const SUPPORT_PHONE = process.env.SUPPORT_PHONE || '+62 811 1798 599';
 const SUPPORT_PHONE_E164 = process.env.SUPPORT_PHONE_E164 || '628111798599';
 
 // Status invoice yang DIPROSES untuk reminder
-const ALLOWED_STATUSES = (process.env.INVOICE_ALLOWED_STATUSES || 'PENDING')
+// Sejak Sep 2026 invoice ticket yang belum dibayar berstatus 'ACTIVE' (sebelumnya 'PENDING').
+const ALLOWED_STATUSES = (process.env.INVOICE_ALLOWED_STATUSES || 'PENDING,ACTIVE')
     .split(',').map(s => s.trim().toUpperCase());
 
 // Status invoice yang DIANGGAP BAYAR -> cancel task
@@ -163,15 +164,14 @@ export async function invoiceTick(limit = 200) {
             const expUtc = parseUtcFlexible(r.expiry_utc);
             if (isNaN(expUtc)) { console.log('[watcher] skip bad expiry', r.id, r.expiry_utc); continue; }
 
-            // Stage awal dinamis: 12h → 3h → 60m → expired
+            // Stage awal dinamis: 12h → 60m → expired (sama dengan PAYMENT_FLOW di taskService;
+            // pay_3h tidak punya template aktif di comm_templates)
             const t12h = expUtc.getTime() - 12 * 3600 * 1000;
-            const t3h = expUtc.getTime() - 3 * 3600 * 1000;
             const t60m = expUtc.getTime() - 60 * 60 * 1000;
             const tExp = expUtc.getTime();
 
             let firstCode, firstAtMs;
             if (now <= t12h) { firstCode = 'pay_12h'; firstAtMs = t12h; }
-            else if (now <= t3h) { firstCode = 'pay_3h'; firstAtMs = t3h; }
             else if (now <= t60m) { firstCode = 'pay_60mins'; firstAtMs = t60m; }
             else if (now < tExp) { firstCode = 'pay_expired'; firstAtMs = tExp; }
             else { continue; } // sudah lewat expired
